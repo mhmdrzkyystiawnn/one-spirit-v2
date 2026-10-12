@@ -1,61 +1,114 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# One Spirit V2
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+One Spirit V2 adalah aplikasi web pemesanan travel/mobil ELF berbasis Laravel. Aplikasi ini menyediakan alur booking dari katalog mobil sampai invoice, dilengkapi dashboard user, review pelanggan, serta panel admin untuk manajemen data operasional.
 
-## About Laravel
+## Fitur Utama
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### User
+- Melihat halaman home, about, testimonials, katalog mobil, dan detail mobil.
+- Filter ketersediaan mobil berdasarkan tanggal sewa.
+- Booking mobil + supir dengan validasi bentrok jadwal mobil/supir.
+- Melihat dashboard riwayat booking dan invoice.
+- Memberikan review setelah booking.
+- Mengelola profil akun (Laravel Breeze).
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### Admin
+- Manajemen data mobil (`/admin/mobil`).
+- Manajemen data supir (`/admin/supir`).
+- Manajemen data user (`/admin/users`).
+- Manajemen data booking (`/admin/booking`), termasuk update status booking, supir, dan mobil.
+- Notifikasi email saat booking baru masuk.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Tech Stack
+- **Backend:** PHP 8.2, Laravel 12
+- **Frontend:** Blade, Vite, Tailwind CSS, Alpine.js
+- **UI/Animation:** AOS, Typed.js
+- **Database:** MySQL
+- **Auth:** Laravel Breeze
+- **Testing:** Pest / PHPUnit
 
-## Learning Laravel
+## Struktur Entitas Inti
+- **users**: data akun + role (`admin` / `user`)
+- **mobil_elf**: data armada dan status (`tersedia`, `dipesan`, `perbaikan`)
+- **supir**: data supir dan status (`tersedia`, `bertugas`, `libur`)
+- **bookings**: transaksi booking dengan status (`pending`, `confirmed`, `completed`, `cancelled`)
+- **reviews**: ulasan user per booking (1 booking = 1 review)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Prasyarat
+- PHP 8.2+
+- Composer
+- Node.js + npm
+- MySQL
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## Instalasi & Setup
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+1. Install dependency PHP:
+   ```bash
+   composer install
+   ```
+2. Install dependency frontend:
+   ```bash
+   npm install
+   ```
+3. Salin env:
+   ```bash
+   cp .env.example .env
+   ```
+4. Generate app key:
+   ```bash
+   php artisan key:generate
+   ```
+5. Atur konfigurasi database di `.env`:
+   - `DB_CONNECTION=mysql`
+   - `DB_HOST=127.0.0.1`
+   - `DB_PORT=3306`
+   - `DB_DATABASE=bookingmobilelf`
+   - `DB_USERNAME=...`
+   - `DB_PASSWORD=...`
+6. Jalankan migrasi + seeder:
+   ```bash
+   php artisan migrate:fresh --seed
+   ```
+7. Build asset:
+   ```bash
+   npm run build
+   ```
 
-## Laravel Sponsors
+> Alternatif setup cepat tersedia via script Composer:
+> ```bash
+> composer run setup
+> ```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Menjalankan Aplikasi
 
-### Premium Partners
+### Mode development (server + queue + vite)
+```bash
+composer run dev
+```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### Menjalankan komponen terpisah
+```bash
+php artisan serve
+php artisan queue:listen --tries=1
+npm run dev
+```
 
-## Contributing
+## Testing
+```bash
+composer run test
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Akun Seed Default
+- **Admin**
+  - Email: `admin@onespirit.com`
+  - Password: `admin123`
 
-## Code of Conduct
+## Konfigurasi Tambahan
+- `ADMIN_WHATSAPP_NUMBER` digunakan di dashboard user untuk tombol kontak admin.
+- Email notifikasi booking baru dikirim ke `admin@bookingelf.com` (lihat `HomeController@storeBooking`).
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Rute Penting
+- Public: `/`, `/about`, `/testimonials`, `/mobil`, `/mobil/{mobil}`
+- Booking: `/booking/{mobil}`, `/booking`, `/invoice/{booking}`
+- User: `/dashboard`, `/profile`
+- Admin: `/admin/mobil`, `/admin/supir`, `/admin/users`, `/admin/booking`
